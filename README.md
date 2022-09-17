@@ -4,6 +4,15 @@ IMGUI + GLFW + OpenGL 3 template project with both CMake and Makefile support.
 
 ## Prerequisites
 
+After cloning this repository, you need to clone IMGUI as a Git submodule, by
+default submodules are not cloned initially. To do this after cloning in the
+project directory run
+
+```shell
+git submodule init
+git submodule udate
+```
+
 Install GFLW on your system. For example on Arch Linux with pacman
 
 ```shell
