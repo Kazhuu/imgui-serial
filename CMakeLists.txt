@@ -14,7 +14,7 @@ set(IMGUI_SOURCES
     ${IMGUI_SOURCES_DIR}/imgui_draw.cpp
     ${IMGUI_SOURCES_DIR}/imgui_tables.cpp
     ${IMGUI_SOURCES_DIR}/imgui_widgets.cpp
-    ${IMGUI_SOURCES_DIR}/backends/imgui_impl_glfw.cpp
+    ${IMGUI_SOURCES_DIR}/backends/imgui_impl_sdl.cpp
     ${IMGUI_SOURCES_DIR}/backends/imgui_impl_opengl3.cpp
 )
 set(SOURCES
@@ -27,11 +27,13 @@ set(HEADERS
     ${IMGUI_SOURCES_DIR}/imstb_rectpack.h
     ${IMGUI_SOURCES_DIR}/imstb_textedit.h
     ${IMGUI_SOURCES_DIR}/imstb_truetype.h
+    ${IMGUI_SOURCES_DIR}/backends/imgui_impl_sdl.h
+    ${IMGUI_SOURCES_DIR}/backends/imgui_impl_opengl3.h
 )
 
 # External packages.
 find_package(OpenGL REQUIRED)
-find_package(glfw3 3.3 REQUIRED)
+find_package(SDL2 REQUIRED)
 
 # Executable
 set(EXECUTABLE imgui_example)
@@ -42,7 +44,7 @@ target_include_directories(
     PRIVATE ${IMGUI_SOURCES_DIR}
     PRIVATE ${IMGUI_SOURCES_DIR}/backends
 )
-target_link_libraries(${EXECUTABLE} glfw OpenGL::GL)
+target_link_libraries(${EXECUTABLE} SDL2::SDL2 OpenGL::GL)
 
 # Enable warnings.
 if(MSVC)

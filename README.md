@@ -1,6 +1,7 @@
-# imgui-glfw-template
+# imgui-sdl-template
 
-IMGUI + GLFW + OpenGL 3 template project with both CMake and Makefile support.
+IMGUI + SDL2 + OpenGL 3 template project with both CMake and Makefile support
+for Windows and Linux machines.
 
 ## Prerequisites
 
@@ -13,15 +14,21 @@ git submodule init
 git submodule udate
 ```
 
-Install GFLW on your system. For example on Arch Linux with pacman
+You need to install SDL2 on your system. On Arch Linux for example
 
 ```shell
-sudo pacman -S glfw
+sudo pacman -S sdl sdl2
+```
+
+And on Windows MSYS2/MinGW do
+
+```shell
+pacman -S mingw-w64-i686-SDL2
 ```
 
 You system also need to have OpenGL drivers installed for your GPU. On Linux
-[Mesa](https://mesa3d.org/) for example, which has drivers for Intel Graphics,
-ATI AMD and NVIDIA GPUs. Check your systems package manager for it.
+[Mesa](https://mesa3d.org/) for example. Check your systems package manager for
+it.
 
 ## Build
 
