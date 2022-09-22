@@ -4,8 +4,6 @@
 # You will need SDL2 (http://www.libsdl.org):
 # Linux:
 #   apt-get install libsdl2-dev
-# Mac OS X:
-#   brew install sdl2
 # MSYS2:
 #   pacman -S mingw-w64-i686-SDL2
 
@@ -32,6 +30,9 @@ DEPS := $(OBJS:.o=.d)
 
 CXXFLAGS = -std=c++11 -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends
 CXXFLAGS += -g -Wall -Wformat -MMD -MP
+# Staticly link libraries to the binary, so it becomes more portable. On Windows
+# for example does not depend on MSYS2 being installed.
+CXXFLAGS += --static
 LIBS =
 
 ifeq ($(UNAME_S), Linux)

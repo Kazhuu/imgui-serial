@@ -3,6 +3,9 @@
 IMGUI + SDL2 + OpenGL 3 template project with both CMake and Makefile support
 for Windows and Linux machines.
 
+This template is based on
+[this IMGUI example](https://github.com/ocornut/imgui/tree/master/examples/example_sdl_opengl3).
+
 ## Prerequisites
 
 After cloning this repository, you need to clone IMGUI as a Git submodule, by
@@ -32,13 +35,44 @@ it.
 
 ## Build
 
-Build with CMake
+### CMake
+
+#### Windows MSYS2
+
+If you are using Windows and MSYS2. Make sure you install MinGW version of CMake
+`mingw-w64-x86_64-cmake`. This will ensure that you are building for Windows.
+You also need to install the tool for actual building. By default Ninja is used
+if generator for the CMake is not specified. Intall Ninja from
+`mingw-w64-x86_64-ninja`. For futher information check
+[CMake forMSYS2](https://www.msys2.org/docs/cmake/).
+
+Install needed packages with
+
+```
+pacman -S mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja
+```
+
+Then just run following to build. If you want release build add
+`-DCMAKE_BUILD_TYPE=Release` to first CMake command.
 
 ```shell
 mkdir build && cd build
 cmake ..
 cmake --build .
 ```
+
+#### Linux
+
+To build run following commands. If you want release build add
+`-DCMAKE_BUILD_TYPE=Release` to first CMake command.
+
+```shell
+mkdir build && cd build
+cmake ..
+cmake --build .
+```
+
+### Makefile
 
 Or with Make
 

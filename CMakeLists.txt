@@ -1,9 +1,12 @@
 cmake_minimum_required(VERSION 3.20.0)
-project(imgui-glfw-template)
+project(imgui-sdl-template)
 
 # Specify the C++ standard.
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+# Export compile_commands.json file.
+set(CMAKE_EXPORT_COMPILE_COMMANDS True)
 
 # Setup source locations.
 set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -31,24 +34,30 @@ set(HEADERS
     ${IMGUI_SOURCES_DIR}/backends/imgui_impl_opengl3.h
 )
 
-# External packages.
+# Find external packages.
 find_package(OpenGL REQUIRED)
-find_package(SDL2 REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(SDL2 REQUIRED sdl2)
 
 # Executable
 set(EXECUTABLE imgui_example)
 add_executable(${EXECUTABLE})
+
 target_sources(${EXECUTABLE} PUBLIC ${HEADERS} PRIVATE ${IMGUI_SOURCES} ${SOURCES})
+
 target_include_directories(
     ${EXECUTABLE}
     PRIVATE ${IMGUI_SOURCES_DIR}
     PRIVATE ${IMGUI_SOURCES_DIR}/backends
+    PUBLIC ${SDL2_STATIC_INCLUDE_DIRS}
 )
-target_link_libraries(${EXECUTABLE} SDL2::SDL2 OpenGL::GL)
 
-# Enable warnings.
-if(MSVC)
-    target_compile_options(${EXECUTABLE} PRIVATE /W4 /WX)
-else()
-    target_compile_options(${EXECUTABLE} PRIVATE -Wall -Wextra -Wpedantic -Werror)
-endif()
+# Link libaries staticly to the binary, so it's more portable and doesn't depend
+# on shared libaries.
+target_link_libraries(${EXECUTABLE} ${SDL2_STATIC_LIBRARIES} OpenGL::GL)
+target_link_libraries(${EXECUTABLE} -static)
+
+target_compile_options(${EXECUTABLE} PUBLIC ${SDL2_STATIC_CFLAGS_OTHER})
+
+# Enable compiler warnings.
+target_compile_options(${EXECUTABLE} PRIVATE -Wall -Wformat -Wpedantic -Werror)
