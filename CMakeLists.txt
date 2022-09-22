@@ -8,6 +8,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Export compile_commands.json file.
 set(CMAKE_EXPORT_COMPILE_COMMANDS True)
 
+execute_process(COMMAND uname OUTPUT_VARIABLE uname)
+if (uname MATCHES "^MSYS" OR uname MATCHES "^MINGW")
+    set(MSYS2 TRUE)
+    message(STATUS "This is MSYS")
+else()
+    set(MSYS2 FALSE)
+    message(STATUS "This is not MSYS")
+endif()
+
 # Setup source locations.
 set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(IMGUI_SOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/imgui)
@@ -42,22 +51,33 @@ pkg_check_modules(SDL2 REQUIRED sdl2)
 # Executable
 set(EXECUTABLE imgui_example)
 add_executable(${EXECUTABLE})
-
 target_sources(${EXECUTABLE} PUBLIC ${HEADERS} PRIVATE ${IMGUI_SOURCES} ${SOURCES})
+
+# Enable compiler warnings.
+target_compile_options(${EXECUTABLE} PRIVATE -Wall -Wformat -Wpedantic -Werror)
 
 target_include_directories(
     ${EXECUTABLE}
     PRIVATE ${IMGUI_SOURCES_DIR}
     PRIVATE ${IMGUI_SOURCES_DIR}/backends
-    PUBLIC ${SDL2_STATIC_INCLUDE_DIRS}
 )
 
-# Link libaries staticly to the binary, so it's more portable and doesn't depend
-# on shared libaries.
-target_link_libraries(${EXECUTABLE} ${SDL2_STATIC_LIBRARIES} OpenGL::GL)
-target_link_libraries(${EXECUTABLE} -static)
+# On Windows MSYS2 link libraries statically to the binary. This way binary can
+# be more easily distributed and does not depend on MSY2 being installed. On
+# Linux just load used shared libraries instead.
+if (MSYS2)
+    target_link_libraries(${EXECUTABLE} ${SDL2_STATIC_LIBRARIES} OpenGL::GL)
+    target_link_libraries(${EXECUTABLE} -static)
+    target_include_directories(
+        ${EXECUTABLE}
+        PUBLIC ${SDL2_STATIC_INCLUDE_DIRS}
+    )
+else()
+    target_link_libraries(${EXECUTABLE} ${SDL2_LIBRARIES} OpenGL::GL)
+    target_include_directories(
+        ${EXECUTABLE}
+        PUBLIC ${SDL2_INCLUDE_DIRS}
+    )
+endif()
 
-target_compile_options(${EXECUTABLE} PUBLIC ${SDL2_STATIC_CFLAGS_OTHER})
-
-# Enable compiler warnings.
-target_compile_options(${EXECUTABLE} PRIVATE -Wall -Wformat -Wpedantic -Werror)
+target_compile_options(${EXECUTABLE} PUBLIC ${SDL2_CFLAGS_OTHER})

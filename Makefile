@@ -30,9 +30,6 @@ DEPS := $(OBJS:.o=.d)
 
 CXXFLAGS = -std=c++11 -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends
 CXXFLAGS += -g -Wall -Wformat -MMD -MP
-# Staticly link libraries to the binary, so it becomes more portable. On Windows
-# for example does not depend on MSYS2 being installed.
-CXXFLAGS += --static
 LIBS =
 
 ifeq ($(UNAME_S), Linux)
@@ -47,6 +44,9 @@ ifeq ($(OS), Windows_NT)
     ECHO_MESSAGE = "MinGW"
     LIBS += -lgdi32 -lopengl32 -limm32 `pkg-config --static --libs sdl2`
 
+    # Statically link libraries to the binary, so it becomes more portable. On
+    # Windows do not depend on MSYS2 being installed.
+    CXXFLAGS += --static
     CXXFLAGS += `pkg-config --cflags sdl2`
     CFLAGS = $(CXXFLAGS)
 endif
