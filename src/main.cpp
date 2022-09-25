@@ -5,6 +5,9 @@
 #include <iostream>
 #include <SDL.h>
 #include <SDL_opengl.h>
+#include <boost/asio.hpp>
+
+#include "serial.hpp"
 
 int main(int, char**)
 {
@@ -47,10 +50,11 @@ int main(int, char**)
     ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
+    Serial serial;
     bool show_demo_window = false;
-    int item_current_idx = 0;
+    std::vector<std::string> serial_ports = serial.getSerialPorts();
+    size_t item_current_idx = 0;
     bool done = false;
-    const char* serial_ports[] = { "AAAA", "BBBB", "CCCC", "DDDD"};
     while (!done)
     {
         SDL_Event event;
@@ -90,13 +94,17 @@ int main(int, char**)
             ImGui::Begin("IMGUI Test", NULL, flags);
 
             // Render components.
+            const char* current_port_selection = NULL;
+            if (!serial_ports.empty()) {
+                current_port_selection = serial_ports[item_current_idx].c_str();
+            }
             ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.33f);
-            if (ImGui::BeginCombo("Serial Port", serial_ports[item_current_idx]))
+            if (ImGui::BeginCombo("Serial Port", current_port_selection))
             {
-                for (int n = 0; n < IM_ARRAYSIZE(serial_ports); n++)
+                for (size_t n = 0; n < serial_ports.size(); ++n)
                 {
                     const bool is_selected = (item_current_idx == n);
-                    if (ImGui::Selectable(serial_ports[n], is_selected))
+                    if (ImGui::Selectable(serial_ports[n].c_str(), is_selected))
                         item_current_idx = n;
 
                     // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
@@ -106,8 +114,15 @@ int main(int, char**)
                 ImGui::EndCombo();
             }
             ImGui::SameLine();
-            if (ImGui::Button("Connect")) {
-                std::cout << "connect" << std::endl;
+            if (serial_ports.empty()) {
+                if (ImGui::Button("Refresh")) {
+                    std::cout << "refresh" << std::endl;
+                    serial_ports = serial.getSerialPorts();
+                }
+            } else {
+                if (ImGui::Button("Connect")) {
+                    std::cout << "connect" << std::endl;
+                }
             }
 
             ImGui::End();

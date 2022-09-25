@@ -31,6 +31,7 @@ set(IMGUI_SOURCES
 )
 set(SOURCES
     ${SOURCE_DIR}/main.cpp
+    ${SOURCE_DIR}/serial.cpp
 )
 set(HEADERS
     ${IMGUI_SOURCES_DIR}/imgui.h
@@ -41,10 +42,15 @@ set(HEADERS
     ${IMGUI_SOURCES_DIR}/imstb_truetype.h
     ${IMGUI_SOURCES_DIR}/backends/imgui_impl_sdl.h
     ${IMGUI_SOURCES_DIR}/backends/imgui_impl_opengl3.h
+    ${SOURCE_DIR}/serial.hpp
 )
 
 # Find external packages.
 find_package(OpenGL REQUIRED)
+
+set(Boost_USE_STATIC_LIBS TRUE)
+find_package(Boost REQUIRED)
+
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 
@@ -58,26 +64,21 @@ target_compile_options(${EXECUTABLE} PRIVATE -Wall -Wformat -Wpedantic -Werror)
 
 target_include_directories(
     ${EXECUTABLE}
+    PUBLIC ${SDL2_INCLUDE_DIRS}
     PRIVATE ${IMGUI_SOURCES_DIR}
     PRIVATE ${IMGUI_SOURCES_DIR}/backends
+    PRIVATE ${Boost_INCLUDE_DIRS}
 )
+target_link_libraries(${EXECUTABLE} OpenGL::GL ${Boost_LIBRARIES})
 
 # On Windows MSYS2 link libraries statically to the binary. This way binary can
 # be more easily distributed and does not depend on MSY2 being installed. On
 # Linux just load used shared libraries instead.
 if (MSYS2)
-    target_link_libraries(${EXECUTABLE} ${SDL2_STATIC_LIBRARIES} OpenGL::GL)
+    target_link_libraries(${EXECUTABLE} ${SDL2_STATIC_LIBRARIES})
     target_link_libraries(${EXECUTABLE} -static)
-    target_include_directories(
-        ${EXECUTABLE}
-        PUBLIC ${SDL2_STATIC_INCLUDE_DIRS}
-    )
 else()
-    target_link_libraries(${EXECUTABLE} ${SDL2_LIBRARIES} OpenGL::GL)
-    target_include_directories(
-        ${EXECUTABLE}
-        PUBLIC ${SDL2_INCLUDE_DIRS}
-    )
+    target_link_libraries(${EXECUTABLE} ${SDL2_LIBRARIES})
 endif()
 
 target_compile_options(${EXECUTABLE} PUBLIC ${SDL2_CFLAGS_OTHER})
