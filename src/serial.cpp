@@ -11,7 +11,7 @@ std::vector<std::string> Serial::getSerialPorts() {
     {
         std::stringstream device_name;
 #if defined (_WIN32) || defined( _WIN64)
-        device_name << "\\\\.\\COM" << i;
+        device_name << "COM" << i;
 #elif __linux__
         device_name << "/dev/ttyUSB" << i-1;
 #else

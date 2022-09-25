@@ -75,7 +75,7 @@ target_link_libraries(${EXECUTABLE} OpenGL::GL ${Boost_LIBRARIES})
 # be more easily distributed and does not depend on MSY2 being installed. On
 # Linux just load used shared libraries instead.
 if (MSYS2)
-    target_link_libraries(${EXECUTABLE} ${SDL2_STATIC_LIBRARIES})
+    target_link_libraries(${EXECUTABLE} ${SDL2_STATIC_LIBRARIES} wsock32 ws2_32)
     target_link_libraries(${EXECUTABLE} -static)
 else()
     target_link_libraries(${EXECUTABLE} ${SDL2_LIBRARIES})

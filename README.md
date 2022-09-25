@@ -20,13 +20,13 @@ git submodule udate
 You need to install SDL2 on your system. On Arch Linux for example
 
 ```shell
-sudo pacman -S sdl sdl2
+sudo pacman -S sdl sdl2 boost
 ```
 
 And on Windows MSYS2/MinGW do
 
 ```shell
-pacman -S mingw-w64-i686-SDL2
+pacman -S mingw-w64-i686-SDL2 mingw-w64-x86_64-boost
 ```
 
 You system also need to have OpenGL drivers installed for your GPU. On Linux
