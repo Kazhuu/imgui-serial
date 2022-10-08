@@ -1,10 +1,7 @@
-# imgui-sdl-template
+# imgui-serial
 
-IMGUI + SDL2 + OpenGL 3 template project with both CMake and Makefile support
-for Windows and Linux machines.
-
-This template is based on
-[this IMGUI example](https://github.com/ocornut/imgui/tree/master/examples/example_sdl_opengl3).
+IMGUI + SDL2 serial port reading serial application example. Support both
+Windows and Linux.
 
 ## Prerequisites
 
@@ -70,14 +67,6 @@ To build run following commands. If you want release build add
 mkdir build && cd build
 cmake ..
 cmake --build .
-```
-
-### Makefile
-
-Or with Make
-
-```shell
-make
 ```
 
 ## Running

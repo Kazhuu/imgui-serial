@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20.0)
 project(imgui-sdl-template)
 
 # Specify the C++ standard.
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Export compile_commands.json file.

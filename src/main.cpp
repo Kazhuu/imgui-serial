@@ -50,13 +50,20 @@ int main(int, char**)
     ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    Serial serial;
+    Serial serial("/dev/ttyACM0", 38400);
     bool show_demo_window = false;
-    std::vector<std::string> serial_ports = serial.getSerialPorts();
+    std::vector<std::string> serial_ports = Serial::get_serial_ports();
     size_t item_current_idx = 0;
     bool done = false;
     while (!done)
     {
+        // TODO: Move this elsewhere.
+        std::vector<char> read_buffer;
+        size_t count = serial.read(read_buffer, 1);
+        if (count > 0) {
+            std::cout << "read: " << count << " bytes: " << read_buffer.at(0) << "\n" << std::endl;
+        }
+
         SDL_Event event;
         while (SDL_PollEvent(&event))
         {
@@ -98,6 +105,16 @@ int main(int, char**)
             if (!serial_ports.empty()) {
                 current_port_selection = serial_ports[item_current_idx].c_str();
             }
+            if (ImGui::Button("Refresh")) {
+                std::cout << "refresh" << std::endl;
+                serial_ports = Serial::get_serial_ports();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Connect")) {
+                char buffer[1] = {'R'};
+                serial.write(buffer, 1);
+                std::cout << "connect" << std::endl;
+            }
             ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.33f);
             if (ImGui::BeginCombo("Serial Port", current_port_selection))
             {
@@ -112,17 +129,6 @@ int main(int, char**)
                         ImGui::SetItemDefaultFocus();
                 }
                 ImGui::EndCombo();
-            }
-            ImGui::SameLine();
-            if (serial_ports.empty()) {
-                if (ImGui::Button("Refresh")) {
-                    std::cout << "refresh" << std::endl;
-                    serial_ports = serial.getSerialPorts();
-                }
-            } else {
-                if (ImGui::Button("Connect")) {
-                    std::cout << "connect" << std::endl;
-                }
             }
 
             ImGui::End();
