@@ -8,6 +8,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Export compile_commands.json file.
 set(CMAKE_EXPORT_COMPILE_COMMANDS True)
 
+add_definitions(-DUNICODE)
+add_definitions(-D_UNICODE)
+
 execute_process(COMMAND uname OUTPUT_VARIABLE uname)
 if (uname MATCHES "^MSYS" OR uname MATCHES "^MINGW")
     set(MSYS2 TRUE)
@@ -56,11 +59,11 @@ pkg_check_modules(SDL2 REQUIRED sdl2)
 
 # Executable
 set(EXECUTABLE imgui_example)
-add_executable(${EXECUTABLE})
+add_executable(${EXECUTABLE} WIN32)
 target_sources(${EXECUTABLE} PUBLIC ${HEADERS} PRIVATE ${IMGUI_SOURCES} ${SOURCES})
 
 # Enable compiler warnings.
-target_compile_options(${EXECUTABLE} PRIVATE -Wall -Wformat -Wpedantic -Werror)
+target_compile_options(${EXECUTABLE} PRIVATE -Wall -Wformat -Wpedantic -Werror -municode)
 
 target_include_directories(
     ${EXECUTABLE}
@@ -75,8 +78,7 @@ target_link_libraries(${EXECUTABLE} OpenGL::GL ${Boost_LIBRARIES})
 # be more easily distributed and does not depend on MSY2 being installed. On
 # Linux just load used shared libraries instead.
 if (MSYS2)
-    target_link_libraries(${EXECUTABLE} ${SDL2_STATIC_LIBRARIES} wsock32 ws2_32)
-    target_link_libraries(${EXECUTABLE} -static)
+    target_link_libraries(${EXECUTABLE} ${SDL2_STATIC_LIBRARIES} wsock32 ws2_32 -static)
 else()
     target_link_libraries(${EXECUTABLE} ${SDL2_LIBRARIES})
 endif()

@@ -50,7 +50,7 @@ int main(int, char**)
     ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    Serial serial("/dev/ttyACM0", 38400);
+    //Serial serial("/dev/ttyACM0", 38400);
     bool show_demo_window = false;
     std::vector<std::string> serial_ports = Serial::get_serial_ports();
     size_t item_current_idx = 0;
@@ -58,11 +58,11 @@ int main(int, char**)
     while (!done)
     {
         // TODO: Move this elsewhere.
-        std::vector<char> read_buffer;
-        size_t count = serial.read(read_buffer, 1);
-        if (count > 0) {
-            std::cout << "read: " << count << " bytes: " << read_buffer.at(0) << "\n" << std::endl;
-        }
+        //std::vector<char> read_buffer;
+        //size_t count = serial.read(read_buffer, 1);
+        // if (count > 0) {
+        //     std::cout << "read: " << count << " bytes: " << read_buffer.at(0) << "\n" << std::endl;
+        // }
 
         SDL_Event event;
         while (SDL_PollEvent(&event))
@@ -111,8 +111,8 @@ int main(int, char**)
             }
             ImGui::SameLine();
             if (ImGui::Button("Connect")) {
-                char buffer[1] = {'R'};
-                serial.write(buffer, 1);
+                //char buffer[1] = {'R'};
+                //serial.write(buffer, 1);
                 std::cout << "connect" << std::endl;
             }
             ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.33f);

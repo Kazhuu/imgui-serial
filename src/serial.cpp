@@ -77,10 +77,10 @@ std::vector<std::string> Serial::get_serial_ports() {
         device_name << "COM" << i;
         try {
             boost::asio::io_service io;
-            boost::asio::serial_port serial(io, device_name);
-            ports.emplace_back(device_name);
+            boost::asio::serial_port serial(io, device_name.str());
+            ports.emplace_back(device_name.str());
         } catch (boost::system::system_error& e) {
-            std::cout << "Error opening serial port " << device_name << ": "
+            std::cout << "Error opening serial port " << device_name.str() << ": "
                       << e.what() << "\n" << std::endl;
         }
     }
