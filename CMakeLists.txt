@@ -15,7 +15,9 @@ add_definitions(-D_UNICODE)
 # Setup source locations.
 set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(IMGUI_SOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/imgui)
+set(IMGUI_FILE_DIALOG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/ImGuiFileDialog)
 
+# Set system specific stuff.
 execute_process(COMMAND uname OUTPUT_VARIABLE uname)
 if (uname MATCHES "^MSYS" OR uname MATCHES "^MINGW")
     set(MSYS2 TRUE)
@@ -27,7 +29,6 @@ else()
     message(STATUS "This is not MSYS")
 endif()
 
-# Set source files.
 set(IMGUI_SOURCES
     ${IMGUI_SOURCES_DIR}/imgui.cpp
     ${IMGUI_SOURCES_DIR}/imgui_demo.cpp
@@ -36,14 +37,19 @@ set(IMGUI_SOURCES
     ${IMGUI_SOURCES_DIR}/imgui_widgets.cpp
     ${IMGUI_SOURCES_DIR}/backends/imgui_impl_sdl.cpp
     ${IMGUI_SOURCES_DIR}/backends/imgui_impl_opengl3.cpp
+    ${IMGUI_SOURCES_DIR}/backends/imgui_impl_opengl3.cpp
+    ${IMGUI_FILE_DIALOG_DIR}/ImGuiFileDialog.cpp
+
 )
 set(SOURCES
     ${SOURCE_DIR}/main.cpp
     ${SOURCE_DIR}/serial.cpp
     ${OS_HELPER_IMPL}
 )
-
 set(HEADERS
+    ${SOURCE_DIR}/serial.hpp
+    ${SOURCE_DIR}/file_dialog_config.hpp
+    # External headers.
     ${IMGUI_SOURCES_DIR}/imgui.h
     ${IMGUI_SOURCES_DIR}/imconfig.h
     ${IMGUI_SOURCES_DIR}/imgui_internal.h
@@ -52,7 +58,7 @@ set(HEADERS
     ${IMGUI_SOURCES_DIR}/imstb_truetype.h
     ${IMGUI_SOURCES_DIR}/backends/imgui_impl_sdl.h
     ${IMGUI_SOURCES_DIR}/backends/imgui_impl_opengl3.h
-    ${SOURCE_DIR}/serial.hpp
+    ${IMGUI_FILE_DIALOG_DIR}/ImGuiFileDialog.h
 )
 
 # Find external packages.
@@ -78,6 +84,7 @@ target_include_directories(
     PRIVATE ${SDL2_INCLUDE_DIRS}
     PRIVATE ${IMGUI_SOURCES_DIR}
     PRIVATE ${IMGUI_SOURCES_DIR}/backends
+    PRIVATE ${IMGUI_FILE_DIALOG_DIR}
     PRIVATE ${Boost_INCLUDE_DIRS}
 )
 
