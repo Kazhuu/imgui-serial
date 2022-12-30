@@ -14,9 +14,11 @@ add_definitions(-D_UNICODE)
 execute_process(COMMAND uname OUTPUT_VARIABLE uname)
 if (uname MATCHES "^MSYS" OR uname MATCHES "^MINGW")
     set(MSYS2 TRUE)
+    add_compile_definitions(WINDOWS)
     message(STATUS "This is MSYS")
 else()
     set(MSYS2 FALSE)
+    add_compile_definitions(LINUX)
     message(STATUS "This is not MSYS")
 endif()
 
@@ -35,6 +37,8 @@ set(IMGUI_SOURCES
 set(SOURCES
     ${SOURCE_DIR}/main.cpp
     ${SOURCE_DIR}/serial.cpp
+    ${SOURCE_DIR}/platform/serial_linux.cpp
+    ${SOURCE_DIR}/platform/serial_windows.cpp
 )
 set(HEADERS
     ${IMGUI_SOURCES_DIR}/imgui.h
@@ -67,7 +71,8 @@ target_compile_options(${EXECUTABLE} PRIVATE -Wall -Wformat -Wpedantic -Werror -
 
 target_include_directories(
     ${EXECUTABLE}
-    PUBLIC ${SDL2_INCLUDE_DIRS}
+    PRIVATE ${SOURCE_DIR}
+    PRIVATE ${SDL2_INCLUDE_DIRS}
     PRIVATE ${IMGUI_SOURCES_DIR}
     PRIVATE ${IMGUI_SOURCES_DIR}/backends
     PRIVATE ${Boost_INCLUDE_DIRS}

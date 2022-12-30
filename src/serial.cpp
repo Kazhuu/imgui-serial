@@ -1,7 +1,6 @@
 #include "serial.hpp"
 
 #include <fcntl.h>
-
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/read.hpp>
 #include <boost/asio/serial_port.hpp>
@@ -67,50 +66,4 @@ void Serial::read_handler(const boost::system::error_code& error,
     } else {
         std::cout << "exit\n" << std::endl;
     }
-}
-
-std::vector<std::string> Serial::get_serial_ports() {
-    std::vector<std::string> ports;
-#if defined(_WIN32) || defined(_WIN64)
-    for (int i = 1; i < 99; ++i) {
-        std::stringstream device_name;
-        device_name << "COM" << i;
-        try {
-            boost::asio::io_service io;
-            boost::asio::serial_port serial(io, device_name.str());
-            ports.emplace_back(device_name.str());
-        } catch (boost::system::system_error& e) {
-            std::cout << "Error opening serial port " << device_name.str() << ": "
-                      << e.what() << "\n" << std::endl;
-        }
-    }
-#elif defined(__linux__)
-    for (int i = 1; i < 99; ++i) {
-        std::stringstream device_name;
-        device_name << "/dev/ttyUSB" << i - 1;
-        try {
-            boost::asio::io_service io;
-            boost::asio::serial_port serial(io, device_name.str());
-            ports.emplace_back(device_name.str());
-        } catch (boost::system::system_error& e) {
-            std::cout << "Error opening serial port " << device_name.str()
-                      << ": " << e.what() << "\n" << std::endl;
-        }
-    }
-    for (int i = 1; i < 99; ++i) {
-        std::stringstream device_name;
-        device_name << "/dev/ttyACM" << i - 1;
-        try {
-            boost::asio::io_service io;
-            boost::asio::serial_port serial(io, device_name.str());
-            ports.emplace_back(device_name.str());
-        } catch (boost::system::system_error& e) {
-            std::cout << "Error opening serial port " << device_name.str()
-                      << ": " << e.what() << "\n" << std::endl;
-        }
-    }
-#else
-    assert(!"Cannot read serial ports, not a supported platform.");
-#endif
-    return ports;
 }
