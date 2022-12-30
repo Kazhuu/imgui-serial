@@ -76,7 +76,7 @@ add_executable(${EXECUTABLE} WIN32)
 target_sources(${EXECUTABLE} PUBLIC ${HEADERS} PRIVATE ${IMGUI_SOURCES} ${SOURCES})
 
 # Enable compiler warnings.
-target_compile_options(${EXECUTABLE} PRIVATE -Wall -Wformat -Wpedantic -Werror -municode)
+target_compile_options(${EXECUTABLE} PRIVATE -Wall -Wformat -Wpedantic -Werror)
 
 target_include_directories(
     ${EXECUTABLE}

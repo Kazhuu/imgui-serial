@@ -107,49 +107,6 @@ int main(int, char**) {
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
 
-        if (show_demo_window) {
-            ImGui::ShowDemoWindow();
-        } else {
-            const ImGuiViewport* viewport = ImGui::GetMainViewport();
-            ImGui::SetNextWindowPos(viewport->Pos);
-            ImGui::SetNextWindowSize(viewport->Size);
-
-            ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
-            ImGui::Begin("IMGUI Test", NULL, flags);
-
-            // Render components.
-            const char* current_port_selection = NULL;
-            if (!serial_ports.empty()) {
-                current_port_selection = serial_ports[item_current_idx].c_str();
-            }
-            if (ImGui::Button("Refresh")) {
-                std::cout << "refresh" << std::endl;
-                serial_ports = Serial::get_serial_ports();
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Connect")) {
-                char buffer[1] = {'R'};
-                serial.write(buffer, 1);
-                std::cout << "connect" << std::endl;
-            }
-            ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.33f);
-            if (ImGui::BeginCombo("Serial Port", current_port_selection))
-            {
-                for (size_t n = 0; n < serial_ports.size(); ++n)
-                {
-                    const bool is_selected = (item_current_idx == n);
-                    if (ImGui::Selectable(serial_ports[n].c_str(), is_selected))
-                        item_current_idx = n;
-
-                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-                    if (is_selected)
-                        ImGui::SetItemDefaultFocus();
-                }
-                ImGui::EndCombo();
-            }
-
-            ImGui::End();
-        }
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
         ImGui::SetNextWindowPos(viewport->Pos);
         ImGui::SetNextWindowSize(viewport->Size);
@@ -158,62 +115,66 @@ int main(int, char**) {
                                  ImGuiWindowFlags_NoMove |
                                  ImGuiWindowFlags_NoSavedSettings |
                                  ImGuiWindowFlags_NoBringToFrontOnFocus;
-        ImGui::Begin("IMGUI Test", NULL, flags);
+        ImGui::Begin("SPC Player", NULL, flags);
 
         // Render components.
-        if (ImGui::Button("Refresh")) {
-            std::cout << "refresh" << std::endl;
-            serial_ports = OsHelper::get_serial_ports();
-        }
-        ImGui::SameLine();
-        if (!serial_ports.empty()) {
-            current_port_selection = serial_ports[item_current_idx].c_str();
-            if (serial.is_open()) {
-                if (ImGui::Button("Disconnect")) {
-                    serial.close();
-                }
-            } else {
-                if (ImGui::Button("Connect")) {
-                    try {
-                        serial.open(current_port_selection, 38400);
-                        char buffer[1] = {'R'};
-                        serial.write(buffer, 1);
-                        std::cout << "connect" << std::endl;
-                    } catch (boost::system::system_error& e) {
-                        std::cout << "error opening serial port: " << e.what()
-                                  << "\n"
-                                  << std::endl;
-                        serial_ports.clear();
+        if (show_demo_window) {
+            ImGui::ShowDemoWindow();
+        } else {
+            if (ImGui::Button("Refresh")) {
+                std::cout << "refresh" << std::endl;
+                serial_ports = OsHelper::get_serial_ports();
+            }
+            ImGui::SameLine();
+            if (!serial_ports.empty()) {
+                current_port_selection = serial_ports[item_current_idx].c_str();
+                if (serial.is_open()) {
+                    if (ImGui::Button("Disconnect")) {
+                        serial.close();
+                    }
+                } else {
+                    if (ImGui::Button("Connect")) {
+                        try {
+                            serial.open(current_port_selection, 38400);
+                            char buffer[1] = {'R'};
+                            serial.write(buffer, 1);
+                            std::cout << "connect" << std::endl;
+                        } catch (boost::system::system_error& e) {
+                            std::cout << "error opening serial port: " << e.what()
+                                << "\n"
+                                << std::endl;
+                            serial_ports.clear();
+                        }
                     }
                 }
             }
-        }
-        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.10f);
-        if (ImGui::BeginCombo("Serial Port", current_port_selection)) {
-            for (size_t n = 0; n < serial_ports.size(); ++n) {
-                const bool is_selected = (item_current_idx == n);
-                if (ImGui::Selectable(serial_ports[n].c_str(), is_selected))
-                    item_current_idx = n;
+            ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.10f);
+            if (ImGui::BeginCombo("Serial Port", current_port_selection)) {
+                for (size_t n = 0; n < serial_ports.size(); ++n) {
+                    const bool is_selected = (item_current_idx == n);
+                    if (ImGui::Selectable(serial_ports[n].c_str(), is_selected))
+                        item_current_idx = n;
 
-                // Set the initial focus when opening the combo (scrolling +
-                // keyboard navigation focus)
-                if (is_selected) ImGui::SetItemDefaultFocus();
+                    // Set the initial focus when opening the combo (scrolling +
+                    // keyboard navigation focus)
+                    if (is_selected) ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
             }
-            ImGui::EndCombo();
-        }
-        ImGui::NewLine();
+            ImGui::NewLine();
 
-        if (ImGui::Button("Open File Dialog")) {
-            ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".spc", ".");
-        }
-        if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey")) {
-            if (ImGuiFileDialog::Instance()->IsOk()) {
-                std::string filename = ImGuiFileDialog::Instance()->GetFilePathName();
-                std::string file_path = ImGuiFileDialog::Instance()->GetCurrentPath();
-                std::cout << "filename: " << filename << "\n" << std::endl;
-                std::cout << "file_path: " << file_path << "\n" << std::endl;
+            if (ImGui::Button("Open File Dialog")) {
+                ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".spc", ".");
             }
-            ImGuiFileDialog::Instance()->Close();
+            if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey")) {
+                if (ImGuiFileDialog::Instance()->IsOk()) {
+                    std::string filename = ImGuiFileDialog::Instance()->GetFilePathName();
+                    std::string file_path = ImGuiFileDialog::Instance()->GetCurrentPath();
+                    std::cout << "filename: " << filename << "\n" << std::endl;
+                    std::cout << "file_path: " << file_path << "\n" << std::endl;
+                }
+                ImGuiFileDialog::Instance()->Close();
+            }
         }
 
         ImGui::End();
