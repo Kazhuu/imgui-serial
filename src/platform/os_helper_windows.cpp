@@ -1,13 +1,11 @@
-#ifdef WINDOWS
-#include "serial.hpp"
-
+#include "platform/os_helper.hpp"
 #include <iostream>
 #include <vector>
 #include <string>
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/serial_port.hpp>
 
-std::vector<std::string> Serial::get_serial_ports() {
+std::vector<std::string> OsHelper::get_serial_ports() {
     std::vector<std::string> ports;
     for (int i = 1; i < 99; ++i) {
         std::stringstream device_name;
@@ -23,4 +21,3 @@ std::vector<std::string> Serial::get_serial_ports() {
     }
     return ports;
 }
-#endif

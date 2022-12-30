@@ -1,3 +1,7 @@
+#ifndef SERIAL_HPP
+#define SERIAL_HPP
+
+#include "platform/os_helper.hpp"
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/serial_port.hpp>
 #include <string>
@@ -9,7 +13,6 @@ class Serial {
    public:
     static const size_t READ_BUFFER_SIZE = 500;
     static const size_t READ_QUEUE_SIZE = 1000;
-    static std::vector<std::string> get_serial_ports();
 
     Serial(std::string device, uint32_t baud_rate);
     virtual ~Serial();
@@ -40,3 +43,5 @@ class Serial {
     char read_queue[READ_QUEUE_SIZE];
     char read_buffer[READ_BUFFER_SIZE];
 };
+
+#endif

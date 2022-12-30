@@ -8,23 +8,26 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Export compile_commands.json file.
 set(CMAKE_EXPORT_COMPILE_COMMANDS True)
 
+# Compile on Windows with unicode support.
 add_definitions(-DUNICODE)
 add_definitions(-D_UNICODE)
-
-execute_process(COMMAND uname OUTPUT_VARIABLE uname)
-if (uname MATCHES "^MSYS" OR uname MATCHES "^MINGW")
-    set(MSYS2 TRUE)
-    add_compile_definitions(WINDOWS)
-    message(STATUS "This is MSYS")
-else()
-    set(MSYS2 FALSE)
-    add_compile_definitions(LINUX)
-    message(STATUS "This is not MSYS")
-endif()
 
 # Setup source locations.
 set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(IMGUI_SOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/imgui)
+
+execute_process(COMMAND uname OUTPUT_VARIABLE uname)
+if (uname MATCHES "^MSYS" OR uname MATCHES "^MINGW")
+    set(MSYS2 TRUE)
+    set(OS_HELPER_IMPL ${SOURCE_DIR}/platform/os_helper_windows.cpp)
+    message(STATUS "This is MSYS")
+else()
+    set(MSYS2 FALSE)
+    set(OS_HELPER_IMPL ${SOURCE_DIR}/platform/os_helper_linux.cpp)
+    message(STATUS "This is not MSYS")
+endif()
+
+# Set source files.
 set(IMGUI_SOURCES
     ${IMGUI_SOURCES_DIR}/imgui.cpp
     ${IMGUI_SOURCES_DIR}/imgui_demo.cpp
@@ -37,9 +40,9 @@ set(IMGUI_SOURCES
 set(SOURCES
     ${SOURCE_DIR}/main.cpp
     ${SOURCE_DIR}/serial.cpp
-    ${SOURCE_DIR}/platform/serial_linux.cpp
-    ${SOURCE_DIR}/platform/serial_windows.cpp
+    ${OS_HELPER_IMPL}
 )
+
 set(HEADERS
     ${IMGUI_SOURCES_DIR}/imgui.h
     ${IMGUI_SOURCES_DIR}/imconfig.h

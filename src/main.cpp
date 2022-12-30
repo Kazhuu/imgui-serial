@@ -1,3 +1,5 @@
+#include "platform/os_helper.hpp"
+#include "serial.hpp"
 #include "imgui.h"
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl3.h"
@@ -6,8 +8,6 @@
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <boost/asio.hpp>
-
-#include "serial.hpp"
 
 int main(int, char**)
 {
@@ -52,7 +52,7 @@ int main(int, char**)
 
     //Serial serial("/dev/ttyACM0", 38400);
     bool show_demo_window = false;
-    std::vector<std::string> serial_ports = Serial::get_serial_ports();
+    std::vector<std::string> serial_ports = OsHelper::get_serial_ports();
     size_t item_current_idx = 0;
     bool done = false;
     while (!done)
@@ -107,7 +107,7 @@ int main(int, char**)
             }
             if (ImGui::Button("Refresh")) {
                 std::cout << "refresh" << std::endl;
-                serial_ports = Serial::get_serial_ports();
+                serial_ports = OsHelper::get_serial_ports();
             }
             ImGui::SameLine();
             if (ImGui::Button("Connect")) {
