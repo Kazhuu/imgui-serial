@@ -3,6 +3,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <atomic>
 
 class Serial {
    public:
@@ -19,6 +20,11 @@ class Serial {
     Serial& operator=(Serial&&) = delete;
 
     void write(char buffer[], size_t size);
+    /**
+     * Read bytes from serial to the given vector the amount of wanted
+     * byte_count. Return the amount of read bytes. Returned bytes may be more
+     * than the requested bytes.
+    */
     size_t read(std::vector<char>& buffer, size_t byte_count);
 
    private:
@@ -30,7 +36,7 @@ class Serial {
     boost::system::error_code error;
     std::thread worker_thread;
     std::mutex read_queue_mutex;
-    size_t read_queue_size;
+    std::atomic_size_t read_queue_size;
     char read_queue[READ_QUEUE_SIZE];
     char read_buffer[READ_BUFFER_SIZE];
 };
