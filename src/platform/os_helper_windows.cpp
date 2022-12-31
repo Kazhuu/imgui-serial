@@ -1,4 +1,5 @@
 #include "platform/os_helper.hpp"
+#include "logging.hpp"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -15,8 +16,7 @@ std::vector<std::string> OsHelper::get_serial_ports() {
             boost::asio::serial_port serial(io, device_name.str());
             ports.emplace_back(device_name.str());
         } catch (boost::system::system_error& e) {
-            std::cout << "Error opening serial port " << device_name.str() << ": "
-                      << e.what() << "\n" << std::endl;
+            LOG_ERROR("Error opening serial port {}: {}", device_name.str(), e.what());
         }
     }
     return ports;

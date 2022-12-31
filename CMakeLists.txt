@@ -5,6 +5,10 @@ project(imgui-serial)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# Configure Conan package manager.
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+
 # Export compile_commands.json file.
 set(CMAKE_EXPORT_COMPILE_COMMANDS True)
 
@@ -44,10 +48,12 @@ set(IMGUI_SOURCES
 set(SOURCES
     ${SOURCE_DIR}/main.cpp
     ${SOURCE_DIR}/serial.cpp
+    ${SOURCE_DIR}/logging.cpp
     ${OS_HELPER_IMPL}
 )
 set(HEADERS
     ${SOURCE_DIR}/serial.hpp
+    ${SOURCE_DIR}/logging.hpp
     ${SOURCE_DIR}/file_dialog_config.hpp
     # External headers.
     ${IMGUI_SOURCES_DIR}/imgui.h
@@ -96,7 +102,7 @@ if (MSYS2)
 else()
     target_link_libraries(${EXECUTABLE} ${SDL2_LIBRARIES})
 endif()
-target_link_libraries(${EXECUTABLE} OpenGL::GL ${Boost_LIBRARIES})
+target_link_libraries(${EXECUTABLE} ${CONAN_LIBS} OpenGL::GL ${Boost_LIBRARIES})
 
 target_compile_options(${EXECUTABLE} PUBLIC ${SDL2_CFLAGS_OTHER})
 

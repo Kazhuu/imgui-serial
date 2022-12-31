@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl3.h"
+#include "logging.hpp"
 #include <iostream>
 #include <SDL.h>
 #include <SDL_opengl.h>
@@ -13,6 +14,8 @@
 #include "ImGuiFileDialog.h"
 
 int main(int, char**) {
+    initialize_logging();
+
     // Setup SDL
     // (Some versions of SDL before <2.0.10 appears to have performance/stalling
     // issues on a minority of Windows systems, depending on whether
@@ -20,7 +23,7 @@ int main(int, char**) {
     // version of SDL is recommended!)
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) !=
         0) {
-        printf("Error: %s\n", SDL_GetError());
+        LOG_ERROR("Error: {}", SDL_GetError());
         return -1;
     }
 
@@ -67,19 +70,11 @@ int main(int, char**) {
     bool done = false;
     const char* current_port_selection = NULL;
     while (!done) {
-        // TODO: Move this elsewhere.
-        //std::vector<char> read_buffer;
-        //size_t count = serial.read(read_buffer, 1);
-        // if (count > 0) {
-        //     std::cout << "read: " << count << " bytes: " << read_buffer.at(0) << "\n" << std::endl;
-        // }
         if (serial.is_open()) {
             std::vector<char> read_buffer;
             size_t count = serial.read_some(read_buffer, 1);
             if (count > 0) {
-                std::cout << "read: " << count
-                          << " bytes: " << read_buffer.at(0) << "\n"
-                          << std::endl;
+                LOG_DEBUG("read: {}, bytes: {}", count, read_buffer.at(0));
             }
         }
 
@@ -122,7 +117,7 @@ int main(int, char**) {
             ImGui::ShowDemoWindow();
         } else {
             if (ImGui::Button("Refresh")) {
-                std::cout << "refresh" << std::endl;
+                LOG_DEBUG("refresh");
                 serial_ports = OsHelper::get_serial_ports();
             }
             ImGui::SameLine();
@@ -138,11 +133,9 @@ int main(int, char**) {
                             serial.open(current_port_selection, 38400);
                             char buffer[1] = {'R'};
                             serial.write(buffer, 1);
-                            std::cout << "connect" << std::endl;
+                            LOG_DEBUG("connect");
                         } catch (boost::system::system_error& e) {
-                            std::cout << "error opening serial port: " << e.what()
-                                << "\n"
-                                << std::endl;
+                            LOG_ERROR("error opening serial port: {}", e.what());
                             serial_ports.clear();
                         }
                     }
@@ -170,8 +163,8 @@ int main(int, char**) {
                 if (ImGuiFileDialog::Instance()->IsOk()) {
                     std::string filename = ImGuiFileDialog::Instance()->GetFilePathName();
                     std::string file_path = ImGuiFileDialog::Instance()->GetCurrentPath();
-                    std::cout << "filename: " << filename << "\n" << std::endl;
-                    std::cout << "file_path: " << file_path << "\n" << std::endl;
+                    LOG_DEBUG("filename: {}", filename);
+                    LOG_DEBUG("file_path: ", file_path);
                 }
                 ImGuiFileDialog::Instance()->Close();
             }

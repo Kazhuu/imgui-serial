@@ -1,4 +1,5 @@
 #include "serial.hpp"
+#include "logging.hpp"
 
 #include <fcntl.h>
 #include <boost/asio/io_service.hpp>
@@ -64,7 +65,7 @@ size_t Serial::read_some(std::vector<char>& buffer, size_t byte_count) {
 
 void Serial::read_handler(const boost::system::error_code& error,
                           size_t bytes_transferred) {
-    std::cout << "reading thread\n" << std::endl;
+    LOG_DEBUG("reading thread");
     if (!error) {
         if (m_read_queue_size + bytes_transferred < READ_QUEUE_SIZE) {
             std::lock_guard<std::mutex> l{m_read_queue_mutex};
@@ -73,17 +74,16 @@ void Serial::read_handler(const boost::system::error_code& error,
             auto begin_target = std::begin(m_read_queue) + m_read_queue_size;
             auto end_target = std::copy(begin, end, begin_target);
             m_read_queue_size = end_target - std::begin(m_read_queue);
-            std::cout << bytes_transferred << " bytes transfered\n"
-                      << std::endl;
-            std::cout << "read queue size: " << m_read_queue_size << std::endl;
+            LOG_DEBUG("bytes transfered: {}", bytes_transferred);
+            LOG_DEBUG("read queue size: ",  m_read_queue_size);
         } else {
-            std::cout << "read queue overflow, discarding data\n" << std::endl;
+            LOG_WARNING("read queue overflow, discarding data");
         }
         m_serial_port.async_read_some(
             boost::asio::buffer(m_read_buffer, READ_BUFFER_SIZE),
             std::bind(&Serial::read_handler, this, std::placeholders::_1,
                       std::placeholders::_2));
     } else {
-        std::cout << "exit\n" << std::endl;
+        LOG_DEBUG("reading thread exit");
     }
 }
