@@ -1,14 +1,14 @@
+#include "imgui.h"
+#include "imgui_impl_opengl3.h"
+#include "imgui_impl_sdl.h"
+#include "logging.hpp"
 #include "platform/os_helper.hpp"
 #include "serial.hpp"
-#include "imgui.h"
-#include "imgui_impl_sdl.h"
-#include "imgui_impl_opengl3.h"
-#include "logging.hpp"
-#include <iostream>
 #include <SDL.h>
 #include <SDL_opengl.h>
-#include <stdio.h>
 #include <boost/asio.hpp>
+#include <iostream>
+#include <stdio.h>
 
 #define CUSTOM_IMGUIFILEDIALOG_CONFIG "file_dialog_config.hpp"
 #include "ImGuiFileDialog.h"
@@ -21,8 +21,7 @@ int main(int, char**) {
     // issues on a minority of Windows systems, depending on whether
     // SDL_INIT_GAMECONTROLLER is enabled or disabled.. updating to latest
     // version of SDL is recommended!)
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) !=
-        0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
         LOG_ERROR("Error: {}", SDL_GetError());
         return -1;
     }
@@ -31,8 +30,7 @@ int main(int, char**) {
     // GL 3.0 + GLSL 130
     const char* glsl_version = "#version 130";
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-                        SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
@@ -41,14 +39,12 @@ int main(int, char**) {
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
     SDL_WindowFlags window_flags =
-        (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE |
-                          SDL_WINDOW_ALLOW_HIGHDPI);
+        (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     SDL_Window* window =
-        SDL_CreateWindow("SPC Player", SDL_WINDOWPOS_CENTERED,
-                         SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
+        SDL_CreateWindow("SPC Player", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
     SDL_GLContext gl_context = SDL_GL_CreateContext(window);
     SDL_GL_MakeCurrent(window, gl_context);
-    SDL_GL_SetSwapInterval(1);  // Enable vsync
+    SDL_GL_SetSwapInterval(1); // Enable vsync
 
     // Setup Dear ImGui context.
     IMGUI_CHECKVERSION();
@@ -81,18 +77,18 @@ int main(int, char**) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             ImGui_ImplSDL2_ProcessEvent(&event);
-            if (event.type == SDL_QUIT) done = true;
-            if (event.type == SDL_WINDOWEVENT &&
-                event.window.event == SDL_WINDOWEVENT_CLOSE &&
+            if (event.type == SDL_QUIT)
+                done = true;
+            if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE &&
                 event.window.windowID == SDL_GetWindowID(window))
                 done = true;
             if (event.type == SDL_KEYUP) {
                 switch (event.key.keysym.sym) {
-                    case SDLK_F1:
-                        show_demo_window = !show_demo_window;
-                        break;
-                    default:
-                        break;
+                case SDLK_F1:
+                    show_demo_window = !show_demo_window;
+                    break;
+                default:
+                    break;
                 }
             }
         }
@@ -106,10 +102,8 @@ int main(int, char**) {
         ImGui::SetNextWindowPos(viewport->Pos);
         ImGui::SetNextWindowSize(viewport->Size);
 
-        ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration |
-                                 ImGuiWindowFlags_NoMove |
-                                 ImGuiWindowFlags_NoSavedSettings |
-                                 ImGuiWindowFlags_NoBringToFrontOnFocus;
+        ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
+                                 ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBringToFrontOnFocus;
         ImGui::Begin("SPC Player", NULL, flags);
 
         // Render components.
@@ -150,7 +144,8 @@ int main(int, char**) {
 
                     // Set the initial focus when opening the combo (scrolling +
                     // keyboard navigation focus)
-                    if (is_selected) ImGui::SetItemDefaultFocus();
+                    if (is_selected)
+                        ImGui::SetItemDefaultFocus();
                 }
                 ImGui::EndCombo();
             }

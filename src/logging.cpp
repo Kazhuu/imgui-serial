@@ -1,5 +1,4 @@
 #include "logging.hpp"
-
 #include "spdlog/sinks/rotating_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
@@ -8,16 +7,14 @@
  * logger.
  */
 void initialize_logging() {
-    spdlog::set_error_handler([](const std::string &msg) {
-        spdlog::get("console")->error("*** LOGGER ERROR ***: {}", msg);
-    });
+    spdlog::set_error_handler(
+        [](const std::string &msg) { spdlog::get("console")->error("*** LOGGER ERROR ***: {}", msg); });
 
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 
     auto max_size = 1024 * 1024 * 5;
     auto max_files = 3;
-    auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
-        "logs/spc_player.txt", max_size, max_files);
+    auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>("logs/spc_player.txt", max_size, max_files);
 
     spdlog::sinks_init_list sink_list = {file_sink, console_sink};
 

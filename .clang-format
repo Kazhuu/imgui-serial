@@ -1,0 +1,8 @@
+---
+ColumnLimit: 120
+IndentWidth: 4
+AccessModifierOffset: -4
+AllowShortFunctionsOnASingleLine: 'Empty'
+PointerAlignment: 'Left'
+Standard: 'Latest'
+...

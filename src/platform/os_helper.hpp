@@ -1,8 +1,8 @@
 #ifndef OS_HELPER_HPP
 #define OS_HELPER_HPP
 
-#include <vector>
 #include <string>
+#include <vector>
 
 class OsHelper {
 public:

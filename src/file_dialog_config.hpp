@@ -2,7 +2,7 @@
 
 // uncomment and modify defines under for customize ImGuiFileDialog
 
-//this options need c++17
+// this options need c++17
 #define USE_STD_FILESYSTEM
 
 //#define MAX_FILE_DIALOG_NAME_BUFFER 1024
@@ -11,15 +11,15 @@
 // the slash's buttons in path cna be used for quick select parallles directories
 //#define USE_QUICK_PATH_SELECT
 
-// the spacing between button path's can be customized. 
+// the spacing between button path's can be customized.
 // if disabled the spacing is defined by the imgui theme
-// define the space between path buttons 
+// define the space between path buttons
 //#define CUSTOM_PATH_SPACING 2
 
 //#define USE_THUMBNAILS
-//the thumbnail generation use the stb_image and stb_resize lib who need to define the implementation
-//btw if you already use them in your app, you can have compiler error due to "implemntation found in double"
-//so uncomment these line for prevent the creation of implementation of these libs again
+// the thumbnail generation use the stb_image and stb_resize lib who need to define the implementation
+// btw if you already use them in your app, you can have compiler error due to "implemntation found in double"
+// so uncomment these line for prevent the creation of implementation of these libs again
 //#define DONT_DEFINE_AGAIN__STB_IMAGE_IMPLEMENTATION
 //#define DONT_DEFINE_AGAIN__STB_IMAGE_RESIZE_IMPLEMENTATION
 //#define IMGUI_RADIO_BUTTON RadioButton
@@ -35,7 +35,7 @@
 
 //#define USE_EXPLORATION_BY_KEYS
 // this mapping by default is for GLFW but you can use another
-//#include <GLFW/glfw3.h> 
+//#include <GLFW/glfw3.h>
 // Up key for explore to the top
 //#define IGFD_KEY_UP ImGuiKey_UpArrow
 // Down key for explore to the bottom
@@ -78,12 +78,12 @@
 //#define OverWriteDialogConfirmButtonString "Confirm"
 //#define OverWriteDialogCancelButtonString "Cancel"
 
-//Validation buttons
+// Validation buttons
 //#define okButtonString " OK"
 //#define okButtonWidth 0.0f
 //#define cancelButtonString " Cancel"
 //#define cancelButtonWidth 0.0f
-//alignement [0:1], 0.0 is left, 0.5 middle, 1.0 right, and other ratios
+// alignement [0:1], 0.0 is left, 0.5 middle, 1.0 right, and other ratios
 //#define okCancelButtonAlignement 0.0f
 //#define invertOkAndCancelButtons 0
 
