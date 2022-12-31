@@ -15,7 +15,7 @@ std::vector<std::string> OsHelper::get_serial_ports() {
             boost::asio::io_service io;
             boost::asio::serial_port serial(io, device_name.str());
             ports.emplace_back(device_name.str());
-        } catch (boost::system::system_error &e) {
+        } catch (boost::system::system_error& e) {
             LOG_ERROR("Error opening serial port {}: {}", device_name.str(), e.what());
         }
     }
@@ -26,7 +26,7 @@ std::vector<std::string> OsHelper::get_serial_ports() {
             boost::asio::io_service io;
             boost::asio::serial_port serial(io, device_name.str());
             ports.emplace_back(device_name.str());
-        } catch (boost::system::system_error &e) {
+        } catch (boost::system::system_error& e) {
             LOG_ERROR("Error opening serial port {}: {}", device_name.str(), e.what());
         }
     }

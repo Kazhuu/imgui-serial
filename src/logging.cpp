@@ -8,7 +8,7 @@
  */
 void initialize_logging() {
     spdlog::set_error_handler(
-        [](const std::string &msg) { spdlog::get("console")->error("*** LOGGER ERROR ***: {}", msg); });
+        [](const std::string& msg) { spdlog::get("console")->error("*** LOGGER ERROR ***: {}", msg); });
 
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 

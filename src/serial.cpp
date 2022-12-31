@@ -49,7 +49,7 @@ void Serial::write(char buffer[], size_t size) {
     boost::asio::write(m_serial_port, boost::asio::buffer(buffer, size));
 }
 
-size_t Serial::read_some(std::vector<char> &buffer, size_t byte_count) {
+size_t Serial::read_some(std::vector<char>& buffer, size_t byte_count) {
     if (m_read_queue_size >= byte_count) {
         buffer.reserve(m_read_queue_size);
         std::lock_guard<std::mutex> l{m_read_queue_mutex};
@@ -61,7 +61,7 @@ size_t Serial::read_some(std::vector<char> &buffer, size_t byte_count) {
     return 0;
 }
 
-void Serial::read_handler(const boost::system::error_code &error, size_t bytes_transferred) {
+void Serial::read_handler(const boost::system::error_code& error, size_t bytes_transferred) {
     LOG_DEBUG("reading thread");
     if (!error) {
         if (m_read_queue_size + bytes_transferred < READ_QUEUE_SIZE) {
