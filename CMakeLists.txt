@@ -59,11 +59,13 @@ set(SOURCES
     ${SOURCE_DIR}/main.cpp
     ${SOURCE_DIR}/serial.cpp
     ${SOURCE_DIR}/logging.cpp
+    ${SOURCE_DIR}/imgui_backend.cpp
     ${OS_HELPER_IMPL}
 )
 set(HEADERS
     ${SOURCE_DIR}/serial.hpp
     ${SOURCE_DIR}/logging.hpp
+    ${SOURCE_DIR}/imgui_backend.hpp
     ${SOURCE_DIR}/file_dialog_config.hpp
 )
 
