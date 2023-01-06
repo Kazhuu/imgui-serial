@@ -33,7 +33,7 @@ else()
     message(STATUS "This is not MSYS")
 endif()
 
-set(IMGUI_SOURCES
+set(EXT_SOURCES
     ${IMGUI_SOURCES_DIR}/imgui.cpp
     ${IMGUI_SOURCES_DIR}/imgui_demo.cpp
     ${IMGUI_SOURCES_DIR}/imgui_draw.cpp
@@ -43,7 +43,17 @@ set(IMGUI_SOURCES
     ${IMGUI_SOURCES_DIR}/backends/imgui_impl_opengl3.cpp
     ${IMGUI_SOURCES_DIR}/backends/imgui_impl_opengl3.cpp
     ${IMGUI_FILE_DIALOG_DIR}/ImGuiFileDialog.cpp
-
+)
+set(EXT_HEADERS
+    ${IMGUI_SOURCES_DIR}/imgui.h
+    ${IMGUI_SOURCES_DIR}/imconfig.h
+    ${IMGUI_SOURCES_DIR}/imgui_internal.h
+    ${IMGUI_SOURCES_DIR}/imstb_rectpack.h
+    ${IMGUI_SOURCES_DIR}/imstb_textedit.h
+    ${IMGUI_SOURCES_DIR}/imstb_truetype.h
+    ${IMGUI_SOURCES_DIR}/backends/imgui_impl_sdl.h
+    ${IMGUI_SOURCES_DIR}/backends/imgui_impl_opengl3.h
+    ${IMGUI_FILE_DIALOG_DIR}/ImGuiFileDialog.h
 )
 set(SOURCES
     ${SOURCE_DIR}/main.cpp
@@ -55,16 +65,6 @@ set(HEADERS
     ${SOURCE_DIR}/serial.hpp
     ${SOURCE_DIR}/logging.hpp
     ${SOURCE_DIR}/file_dialog_config.hpp
-    # External headers.
-    ${IMGUI_SOURCES_DIR}/imgui.h
-    ${IMGUI_SOURCES_DIR}/imconfig.h
-    ${IMGUI_SOURCES_DIR}/imgui_internal.h
-    ${IMGUI_SOURCES_DIR}/imstb_rectpack.h
-    ${IMGUI_SOURCES_DIR}/imstb_textedit.h
-    ${IMGUI_SOURCES_DIR}/imstb_truetype.h
-    ${IMGUI_SOURCES_DIR}/backends/imgui_impl_sdl.h
-    ${IMGUI_SOURCES_DIR}/backends/imgui_impl_opengl3.h
-    ${IMGUI_FILE_DIALOG_DIR}/ImGuiFileDialog.h
 )
 
 # Find external packages.
@@ -76,23 +76,30 @@ find_package(Boost REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 
-# Executable
-set(EXECUTABLE imgui_example)
+# Compile external stuff as a static library.
+add_library(external STATIC ${EXT_HEADERS} ${EXT_SOURCES})
+target_include_directories(
+    external
+    PUBLIC ${IMGUI_SOURCES_DIR}
+    PUBLIC ${SDL2_INCLUDE_DIRS}
+    PUBLIC ${IMGUI_SOURCES_DIR}/backends
+    PUBLIC ${IMGUI_FILE_DIALOG_DIR}
+)
+target_link_libraries(external ${SDL2_LIBRARIES} OpenGL::GL)
+
+# Add the main executable.
+set(EXECUTABLE spc_player)
 add_executable(${EXECUTABLE} WIN32)
-target_sources(${EXECUTABLE} PUBLIC ${HEADERS} PRIVATE ${IMGUI_SOURCES} ${SOURCES})
-
-# Enable compiler warnings.
-target_compile_options(${EXECUTABLE} PRIVATE -Wall -Wformat -Wpedantic -Werror)
-
+target_sources(${EXECUTABLE} PRIVATE ${HEADERS} ${SOURCES})
+target_link_libraries(${EXECUTABLE} external ${CONAN_LIBS} ${Boost_LIBRARIES})
 target_include_directories(
     ${EXECUTABLE}
     PRIVATE ${SOURCE_DIR}
-    PRIVATE ${SDL2_INCLUDE_DIRS}
-    PRIVATE ${IMGUI_SOURCES_DIR}
-    PRIVATE ${IMGUI_SOURCES_DIR}/backends
-    PRIVATE ${IMGUI_FILE_DIALOG_DIR}
     PRIVATE ${Boost_INCLUDE_DIRS}
 )
+
+# Enable compiler warnings.
+target_compile_options(${EXECUTABLE} PRIVATE -Wall -Wextra -Wformat -Wconversion -Wpedantic -Werror)
 
 # On Windows MSYS2 link libraries statically to the binary. This way binary can
 # be more easily distributed and does not depend on MSY2 being installed. On
@@ -102,9 +109,8 @@ if (MSYS2)
 else()
     target_link_libraries(${EXECUTABLE} ${SDL2_LIBRARIES})
 endif()
-target_link_libraries(${EXECUTABLE} ${CONAN_LIBS} OpenGL::GL ${Boost_LIBRARIES})
 
-target_compile_options(${EXECUTABLE} PUBLIC ${SDL2_CFLAGS_OTHER})
+target_compile_options(${EXECUTABLE} PRIVATE ${SDL2_CFLAGS_OTHER})
 
 # Download Google test and set to use new policy.
 cmake_policy(SET CMP0135 NEW)
@@ -117,6 +123,6 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
+# Enable testing and add test folder.
 enable_testing()
-
 add_subdirectory(test)
