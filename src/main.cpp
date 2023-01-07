@@ -29,7 +29,7 @@ int main(int, char**) {
             std::vector<char> read_buffer;
             size_t count = serial.read_some(read_buffer, 1);
             if (count > 0) {
-                LOG_DEBUG("read: {}, bytes: {}", count, read_buffer.at(0));
+                log_debug("read: {}, bytes: {}", count, read_buffer.at(0));
             }
         }
 
@@ -41,7 +41,7 @@ int main(int, char**) {
             ImGui::ShowDemoWindow();
         }
         if (ImGui::Button("Refresh")) {
-            LOG_DEBUG("refresh");
+            log_debug("refresh");
             serial_ports = OsHelper::get_serial_ports();
         }
         ImGui::SameLine();
@@ -57,9 +57,9 @@ int main(int, char**) {
                         serial.open(current_port_selection, 38400);
                         char buffer[1] = {'R'};
                         serial.write(buffer, 1);
-                        LOG_DEBUG("connect");
+                        log_debug("connect");
                     } catch (boost::system::system_error& e) {
-                        LOG_ERROR("error opening serial port: {}", e.what());
+                        log_error("error opening serial port: {}", e.what());
                         serial_ports.clear();
                     }
                 }
@@ -88,8 +88,8 @@ int main(int, char**) {
             if (ImGuiFileDialog::Instance()->IsOk()) {
                 std::string filename = ImGuiFileDialog::Instance()->GetFilePathName();
                 std::string file_path = ImGuiFileDialog::Instance()->GetCurrentPath();
-                LOG_DEBUG("filename: {}", filename);
-                LOG_DEBUG("file_path: ", file_path);
+                log_debug("filename: {}", filename);
+                log_debug("file_path: ", file_path);
             }
             ImGuiFileDialog::Instance()->Close();
         }

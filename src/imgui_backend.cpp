@@ -26,7 +26,7 @@ void ImGuiBackend::init_imgui() {
     // SDL_INIT_GAMECONTROLLER is enabled or disabled.. updating to latest
     // version of SDL is recommended!)
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
-        LOG_ERROR("Error: {}", SDL_GetError());
+        log_error("Error: {}", SDL_GetError());
         exit(-1);
     }
     // Decide GL+GLSL versions.

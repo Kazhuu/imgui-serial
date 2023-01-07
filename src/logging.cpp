@@ -12,8 +12,8 @@ void initialize_logging() {
 
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 
-    auto max_size = 1024 * 1024 * 5;
-    auto max_files = 3;
+    const auto max_size = 1024 * 1024 * 5;
+    const auto max_files = 3;
     auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>("logs/spc_player.txt", max_size, max_files);
 
     spdlog::sinks_init_list sink_list = {file_sink, console_sink};

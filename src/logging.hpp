@@ -5,10 +5,29 @@
 
 void initialize_logging();
 
-#define LOG_DEBUG(text, ...) spdlog::debug((text), ##__VA_ARGS__);
-#define LOG_INFO(text, ...) spdlog::info((text), ##__VA_ARGS__);
-#define LOG_WARNING(text, ...) spdlog::warn((text), ##__VA_ARGS__);
-#define LOG_ERROR(text, ...) spdlog::error((text), ##__VA_ARGS__);
-#define LOG_CRITICAL(text, ...) spdlog::critical((text), ##__VA_ARGS__);
+template<typename... Args>
+inline void log_debug(spdlog::format_string_t<Args...> fmt, Args &&... args) {
+    spdlog::debug(fmt, std::forward<Args>(args)...);
+}
+
+template<typename... Args>
+inline void log_info(spdlog::format_string_t<Args...> fmt, Args &&... args) {
+    spdlog::info(fmt, std::forward<Args>(args)...);
+}
+
+template<typename... Args>
+inline void log_warning(spdlog::format_string_t<Args...> fmt, Args &&... args) {
+    spdlog::warn(fmt, std::forward<Args>(args)...);
+}
+
+template<typename... Args>
+inline void log_error(spdlog::format_string_t<Args...> fmt, Args &&... args) {
+    spdlog::error(fmt, std::forward<Args>(args)...);
+}
+
+template<typename... Args>
+inline void log_critical(spdlog::format_string_t<Args...> fmt, Args &&... args) {
+    spdlog::critical(fmt, std::forward<Args>(args)...);
+}
 
 #endif

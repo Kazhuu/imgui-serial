@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.20.0)
 project(imgui-serial)
 
+# By default build a debug build.
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Debug")
+endif()
+
 # Specify the C++ standard.
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -15,6 +20,14 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS True)
 # Compile on Windows with unicode support.
 add_definitions(-DUNICODE)
 add_definitions(-D_UNICODE)
+
+# Locate clang-tidy
+find_program(CLANGTIDY clang-tidy)
+if(CLANGTIDY)
+    message(STATUS "clang-tidy finished setting up.")
+else()
+    message(SEND_ERROR "Clang-Tidy requested but executable not found.")
+endif()
 
 # Setup source locations.
 set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -71,10 +84,8 @@ set(HEADERS
 
 # Find external packages.
 find_package(OpenGL REQUIRED)
-
 set(Boost_USE_STATIC_LIBS TRUE)
 find_package(Boost REQUIRED)
-
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 
@@ -87,18 +98,21 @@ target_include_directories(
     PUBLIC ${IMGUI_SOURCES_DIR}/backends
     PUBLIC ${IMGUI_FILE_DIALOG_DIR}
 )
-target_link_libraries(external ${SDL2_LIBRARIES} OpenGL::GL)
+target_link_libraries(external ${SDL2_LIBRARIES} ${Boost_LIBRARIES} ${CONAN_LIBS} OpenGL::GL)
 
 # Add the main executable.
 set(EXECUTABLE spc_player)
 add_executable(${EXECUTABLE} WIN32)
 target_sources(${EXECUTABLE} PRIVATE ${HEADERS} ${SOURCES})
-target_link_libraries(${EXECUTABLE} external ${CONAN_LIBS} ${Boost_LIBRARIES})
+target_link_libraries(${EXECUTABLE} external )
 target_include_directories(
     ${EXECUTABLE}
     PRIVATE ${SOURCE_DIR}
     PRIVATE ${Boost_INCLUDE_DIRS}
 )
+
+# Only enable clang-tidy checks for this target and related files.
+#set_target_properties(${EXECUTABLE} PROPERTIES CXX_CLANG_TIDY ${CLANGTIDY})
 
 # Enable compiler warnings.
 target_compile_options(${EXECUTABLE} PRIVATE -Wall -Wextra -Wformat -Wconversion -Wpedantic -Werror)
