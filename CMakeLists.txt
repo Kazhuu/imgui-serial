@@ -112,7 +112,7 @@ target_include_directories(
 )
 
 # Only enable clang-tidy checks for this target and related files.
-#set_target_properties(${EXECUTABLE} PROPERTIES CXX_CLANG_TIDY ${CLANGTIDY})
+set_target_properties(${EXECUTABLE} PROPERTIES CXX_CLANG_TIDY ${CLANGTIDY})
 
 # Enable compiler warnings.
 target_compile_options(${EXECUTABLE} PRIVATE -Wall -Wextra -Wformat -Wconversion -Wpedantic -Werror)

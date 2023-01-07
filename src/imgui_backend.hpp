@@ -9,15 +9,21 @@
 class ImGuiBackend {
 public:
     ImGuiBackend(std::string app_name, std::function<void()> quit_callback);
+
     ~ImGuiBackend();
-    void init_imgui();
+    ImGuiBackend(const ImGuiBackend&) = delete;
+    ImGuiBackend& operator=(const ImGuiBackend&) = delete;
+    ImGuiBackend(ImGuiBackend&&) = delete;
+    ImGuiBackend& operator=(ImGuiBackend&&) = delete;
+
+    void init_imgui(int width, int height);
     void start_frame();
     void end_frame();
     void process_keys();
-    void register_callback(std::string key, std::function<void()> callback);
+    void register_callback(const std::string& key, const std::function<void()>& callback);
 
 private:
-    void execute_callback(std::string key);
+    void execute_callback(const std::string& key);
 
     SDL_Window* _window;
     SDL_GLContext _gl_context;

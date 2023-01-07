@@ -5,9 +5,10 @@
 #include "logging.hpp"
 #include <SDL.h>
 #include <SDL_opengl.h>
+#include <utility>
 
 ImGuiBackend::ImGuiBackend(std::string app_name, std::function<void()> quit_callback)
-    : _app_name(app_name), _quit_callback(quit_callback) {}
+    : _window(nullptr), _gl_context(), _app_name(std::move(app_name)), _quit_callback(std::move(quit_callback)) {}
 
 ImGuiBackend::~ImGuiBackend() {
     ImGui_ImplOpenGL3_Shutdown();
@@ -19,7 +20,7 @@ ImGuiBackend::~ImGuiBackend() {
     SDL_Quit();
 }
 
-void ImGuiBackend::init_imgui() {
+void ImGuiBackend::init_imgui(int width, int height) {
     // Setup SDL
     // (Some versions of SDL before <2.0.10 appears to have performance/stalling
     // issues on a minority of Windows systems, depending on whether
@@ -27,7 +28,7 @@ void ImGuiBackend::init_imgui() {
     // version of SDL is recommended!)
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
         log_error("Error: {}", SDL_GetError());
-        exit(-1);
+        std::terminate();
     }
     // Decide GL+GLSL versions.
     // GL 3.0 + GLSL 130
@@ -38,13 +39,15 @@ void ImGuiBackend::init_imgui() {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
     // Create window with graphics context.
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-    SDL_WindowFlags window_flags =
-        (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-    _window =
-        SDL_CreateWindow(_app_name.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
+    const int DOUBLE_BUFFER = 1;
+    const int DEPTH_BUFFER_SIZE = 24;
+    const int STENCIL_BUFFER_SIZE = 8;
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, DOUBLE_BUFFER);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, DEPTH_BUFFER_SIZE);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, STENCIL_BUFFER_SIZE);
+    auto window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+    _window = SDL_CreateWindow(_app_name.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height,
+                               window_flags);
     _gl_context = SDL_GL_CreateContext(_window);
     SDL_GL_MakeCurrent(_window, _gl_context);
     SDL_GL_SetSwapInterval(1); // Enable vsync
@@ -73,7 +76,7 @@ void ImGuiBackend::start_frame() {
 
     ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
                              ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBringToFrontOnFocus;
-    ImGui::Begin(_app_name.c_str(), NULL, flags);
+    ImGui::Begin(_app_name.c_str(), nullptr, flags);
 }
 
 void ImGuiBackend::end_frame() {
@@ -88,13 +91,15 @@ void ImGuiBackend::end_frame() {
 
 void ImGuiBackend::process_keys() {
     SDL_Event event;
-    while (SDL_PollEvent(&event)) {
+    while (SDL_PollEvent(&event) != 0) {
         ImGui_ImplSDL2_ProcessEvent(&event);
-        if (event.type == SDL_QUIT)
+        if (event.type == SDL_QUIT) {
             _quit_callback();
+        }
         if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE &&
-            event.window.windowID == SDL_GetWindowID(_window))
+            event.window.windowID == SDL_GetWindowID(_window)) {
             _quit_callback();
+        }
         if (event.type == SDL_KEYUP) {
             switch (event.key.keysym.sym) {
             case SDLK_F1:
@@ -107,10 +112,10 @@ void ImGuiBackend::process_keys() {
     }
 }
 
-void ImGuiBackend::register_callback(std::string key, std::function<void()> callback) {
+void ImGuiBackend::register_callback(const std::string& key, const std::function<void()>& callback) {
     _callbacks.insert({key, callback});
 }
 
-void ImGuiBackend::execute_callback(std::string key) {
+void ImGuiBackend::execute_callback(const std::string& key) {
     _callbacks.at(key)();
 }

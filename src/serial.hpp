@@ -2,6 +2,7 @@
 #define SERIAL_HPP
 
 #include "platform/os_helper.hpp"
+#include <array>
 #include <atomic>
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/serial_port.hpp>
@@ -15,17 +16,17 @@ public:
     static const size_t READ_QUEUE_SIZE = 1000;
 
     Serial();
-    virtual ~Serial();
+    virtual ~Serial() noexcept;
 
     Serial(const Serial&) = delete;
     Serial& operator=(const Serial&) = delete;
     Serial(Serial&& other) = delete;
     Serial& operator=(Serial&&) = delete;
 
-    void open(std::string device, uint32_t baud_rate);
+    void open(const std::string& device, uint32_t baud_rate);
     void close();
-    bool is_open();
-    void write(char buffer[], size_t size);
+    [[nodiscard]] bool is_open() const;
+    void write(char* buffer, size_t size);
     /**
      * Read bytes from serial to the given vector the amount of wanted
      * byte_count. Return the amount of read bytes. Returned bytes may be more
@@ -43,8 +44,8 @@ private:
     std::thread m_worker_thread;
     std::mutex m_read_queue_mutex;
     std::atomic_size_t m_read_queue_size;
-    char m_read_queue[READ_QUEUE_SIZE];
-    char m_read_buffer[READ_BUFFER_SIZE];
+    std::array<char, READ_QUEUE_SIZE> m_read_queue;
+    std::array<char, READ_BUFFER_SIZE> m_read_buffer;
 };
 
 #endif
