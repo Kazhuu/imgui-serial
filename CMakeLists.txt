@@ -73,13 +73,18 @@ set(SOURCES
     ${SOURCE_DIR}/serial.cpp
     ${SOURCE_DIR}/logging.cpp
     ${SOURCE_DIR}/imgui_backend.cpp
+    ${SOURCE_DIR}/ui/application.cpp
+    ${SOURCE_DIR}/ui/file_dialog.cpp
     ${OS_HELPER_IMPL}
 )
 set(HEADERS
+    ${SOURCE_DIR}/config.hpp
     ${SOURCE_DIR}/serial.hpp
     ${SOURCE_DIR}/logging.hpp
     ${SOURCE_DIR}/imgui_backend.hpp
     ${SOURCE_DIR}/file_dialog_config.hpp
+    ${SOURCE_DIR}/ui/application.hpp
+    ${SOURCE_DIR}/ui/file_dialog.hpp
 )
 
 # Find external packages.

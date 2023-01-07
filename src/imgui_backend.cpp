@@ -1,4 +1,5 @@
 #include "imgui_backend.hpp"
+#include "config.hpp"
 #include "imgui.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdl.h"
@@ -39,10 +40,7 @@ void ImGuiBackend::init_imgui(int width, int height) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
     // Create window with graphics context.
-    const int DOUBLE_BUFFER = 1;
-    const int DEPTH_BUFFER_SIZE = 24;
-    const int STENCIL_BUFFER_SIZE = 8;
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, DOUBLE_BUFFER);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, ENABLE_DOUBLE_BUFFER);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, DEPTH_BUFFER_SIZE);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, STENCIL_BUFFER_SIZE);
     auto window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);

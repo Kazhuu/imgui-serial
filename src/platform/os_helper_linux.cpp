@@ -1,3 +1,4 @@
+#include "config.hpp"
 #include "logging.hpp"
 #include "platform/os_helper.hpp"
 #include <boost/asio/io_service.hpp>
@@ -5,8 +6,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
-const int PORT_COUNT = 99;
 
 std::vector<std::string> OsHelper::get_serial_ports() {
     std::vector<std::string> ports;

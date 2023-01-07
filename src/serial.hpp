@@ -1,6 +1,7 @@
 #ifndef SERIAL_HPP
 #define SERIAL_HPP
 
+#include "config.hpp"
 #include "platform/os_helper.hpp"
 #include <array>
 #include <atomic>
@@ -12,9 +13,6 @@
 
 class Serial {
 public:
-    static const size_t READ_BUFFER_SIZE = 500;
-    static const size_t READ_QUEUE_SIZE = 1000;
-
     Serial();
     virtual ~Serial() noexcept;
 
