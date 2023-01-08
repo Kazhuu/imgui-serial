@@ -95,10 +95,10 @@ After everything compiles, executable `spc_player` will be placed under your
 
 ## Tests
 
-After successful build, simple in the build folder simple execute
+After successful build, in the build folder simple execute:
 
 ```shell
 ctest
 ```
 
-Another way is to execute the test executable under `build/bin` folder.
+Another way is to execute the test are the other executables under `build/bin` folder.
