@@ -4,40 +4,14 @@
 
 namespace ui {
 
-Application::Application(ImGuiBackend& backend) : m_backend(backend) {
+Application::Application(ImGuiBackend& backend) : m_backend(backend), m_spc_player(m_serial) {
     m_backend.register_callback("F1", [this]() { m_show_demo_window = !m_show_demo_window; });
     m_serial_ports = OsHelper::get_serial_ports();
 }
 
 void Application::render() {
-
     if (m_show_demo_window) {
         ImGui::ShowDemoWindow();
-    }
-    if (ImGui::Button("Refresh")) {
-        log_debug("refresh");
-        m_serial_ports = OsHelper::get_serial_ports();
-    }
-    ImGui::SameLine();
-    if (!m_serial_ports.empty()) {
-        m_current_port_selection = m_serial_ports[m_item_current_idx].c_str();
-        if (m_serial.is_open()) {
-            if (ImGui::Button("Disconnect")) {
-                m_serial.close();
-            }
-        } else {
-            if (ImGui::Button("Connect")) {
-                try {
-                    m_serial.open(m_current_port_selection, BAUD_RATE);
-                    std::array<char, 1> buffer = {'R'};
-                    m_serial.write(buffer.data(), 1);
-                    log_debug("connect");
-                } catch (boost::system::system_error& e) {
-                    log_error("error opening serial port: {}", e.what());
-                    m_serial_ports.clear();
-                }
-            }
-        }
     }
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * COMPONENT_WIDTH);
     if (ImGui::BeginCombo("Serial Port", m_current_port_selection)) {
@@ -53,6 +27,41 @@ void Application::render() {
             }
         }
         ImGui::EndCombo();
+    }
+    if (ImGui::Button("Refresh")) {
+        log_debug("refresh");
+        m_current_port_selection = nullptr;
+        m_serial_ports.clear();
+        m_serial_ports = OsHelper::get_serial_ports();
+    }
+    if (!m_serial_ports.empty()) {
+        ImGui::SameLine();
+        m_current_port_selection = m_serial_ports[m_item_current_idx].c_str();
+        if (m_serial.is_open()) {
+            if (ImGui::Button("Disconnect")) {
+                m_serial.close();
+            }
+        } else {
+            if (ImGui::Button("Connect")) {
+                try {
+                    m_serial.open(m_current_port_selection, BAUD_RATE);
+                } catch (boost::system::system_error& e) {
+                    log_error("error opening serial port: {}", e.what());
+                    m_serial_ports.clear();
+                }
+            }
+        }
+    }
+
+    if (m_serial.is_open()) {
+        ImGui::BeginDisabled(m_spc_player.is_processing());
+        if (ImGui::Button("Reset")) {
+            m_spc_player.reset();
+        }
+        if (ImGui::Button("Timeout")) {
+            m_spc_player.test_timeout();
+        }
+        ImGui::EndDisabled();
     }
 
     m_file_dialog.render();

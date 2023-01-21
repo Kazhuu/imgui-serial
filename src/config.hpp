@@ -13,6 +13,7 @@ const int RESOLUTION_HEIGHT = 720;
 const int PORT_COUNT = 99;
 const int LOG_FILE_SIZE_BYTES = 1024 * 1024 * 5;
 const int LOG_FILE_COUNT = 3;
+const int RESET_TIMEOUT_MS = 100;
 
 // ImGui constants.
 const float COMPONENT_WIDTH = 0.10F;

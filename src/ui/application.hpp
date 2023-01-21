@@ -2,8 +2,8 @@
 #define APPLICATION_HPP
 
 #include "imgui_backend.hpp"
-#include "serial.hpp"
 #include "ui/file_dialog.hpp"
+#include "spc_player.hpp"
 
 namespace ui {
 
@@ -19,8 +19,9 @@ private:
     std::vector<std::string> m_serial_ports;
     const char* m_current_port_selection = nullptr;
     size_t m_item_current_idx = 0;
-    Serial m_serial;
     ui::FileDialog m_file_dialog;
+    Serial m_serial;
+    SpcPlayer m_spc_player;
 };
 
 } // namespace ui

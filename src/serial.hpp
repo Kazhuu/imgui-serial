@@ -5,11 +5,16 @@
 #include "platform/os_helper.hpp"
 #include <array>
 #include <atomic>
+#include <boost/asio/deadline_timer.hpp>
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/serial_port.hpp>
+#include <boost/date_time/time_duration.hpp>
+#include <boost/asio/executor_work_guard.hpp>
 #include <string>
 #include <thread>
 #include <vector>
+
+using callback_t = std::function<void(std::vector<char>&, bool)>;
 
 class Serial {
 public:
@@ -25,25 +30,25 @@ public:
     void close();
     [[nodiscard]] bool is_open() const;
     void write(char* buffer, size_t size);
-    /**
-     * Read bytes from serial to the given vector the amount of wanted
-     * byte_count. Return the amount of read bytes. Returned bytes may be more
-     * than the requested bytes.
-     */
-    size_t read_some(std::vector<char>& buffer, size_t byte_count);
+    void read_async(size_t requested_bytes, callback_t& callback, unsigned int duration_ms);
 
 private:
     void read_handler(const boost::system::error_code& error, size_t bytes_transferred);
+    void timeout_handler(const boost::system::error_code& error);
+    void execute_callback(size_t bytes_transferred, bool timeout);
+
+    using work_guard_t = boost::asio::executor_work_guard<boost::asio::io_context::executor_type>;
 
     bool m_open;
     boost::asio::io_service m_io;
     boost::asio::serial_port m_serial_port;
-    boost::system::error_code m_error;
+    boost::asio::deadline_timer m_timer;
+    work_guard_t m_work_guard;
     std::thread m_worker_thread;
-    std::mutex m_read_queue_mutex;
     std::atomic_size_t m_read_queue_size;
-    std::array<char, READ_QUEUE_SIZE> m_read_queue;
     std::array<char, READ_BUFFER_SIZE> m_read_buffer;
+    std::mutex m_callback_mutex;
+    callback_t m_user_read_callback;
 };
 
 #endif
