@@ -3,6 +3,7 @@
 #include "logging.hpp"
 #include "string"
 #include "config.hpp"
+#include "spc_file.hpp"
 
 #define CUSTOM_IMGUIFILEDIALOG_CONFIG "file_dialog_config.hpp" // NOLINT
 #include "ImGuiFileDialog.h"
@@ -23,6 +24,13 @@ void FileDialog::render() {
             std::string file_path = ImGuiFileDialog::Instance()->GetCurrentPath();
             log_debug("filename: {}", filename);
             log_debug("file_path: ", file_path);
+
+            SpcFile spc_file(filename);
+            if (spc_file.is_spc_file()) {
+                log_info("opened file {}", spc_file.get_name());
+            } else {
+                log_info("invalid spc file");
+            }
         }
         ImGuiFileDialog::Instance()->Close();
     }
