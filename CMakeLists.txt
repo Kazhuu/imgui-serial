@@ -10,10 +10,6 @@ endif()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Configure Conan package manager.
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
-
 # Export compile_commands.json file.
 set(CMAKE_EXPORT_COMPILE_COMMANDS True)
 
@@ -74,6 +70,7 @@ set(SOURCES
     ${SOURCE_DIR}/logging.cpp
     ${SOURCE_DIR}/imgui_backend.cpp
     ${SOURCE_DIR}/spc_player.cpp
+    ${SOURCE_DIR}/spc_file.cpp
     ${SOURCE_DIR}/ui/application.cpp
     ${SOURCE_DIR}/ui/file_dialog.cpp
     ${OS_HELPER_IMPL}
@@ -84,17 +81,19 @@ set(HEADERS
     ${SOURCE_DIR}/logging.hpp
     ${SOURCE_DIR}/imgui_backend.hpp
     ${SOURCE_DIR}/spc_player.hpp
+    ${SOURCE_DIR}/spc_file.hpp
     ${SOURCE_DIR}/file_dialog_config.hpp
     ${SOURCE_DIR}/ui/application.hpp
     ${SOURCE_DIR}/ui/file_dialog.hpp
 )
 
-# Find external packages.
+# Find and compile external packages.
 find_package(OpenGL REQUIRED)
 set(Boost_USE_STATIC_LIBS TRUE)
 find_package(Boost REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
+add_subdirectory(ext/spdlog)
 
 # Compile external stuff as a static library.
 add_library(external STATIC ${EXT_HEADERS} ${EXT_SOURCES})
@@ -105,7 +104,7 @@ target_include_directories(
     PUBLIC ${IMGUI_SOURCES_DIR}/backends
     PUBLIC ${IMGUI_FILE_DIALOG_DIR}
 )
-target_link_libraries(external ${SDL2_LIBRARIES} ${Boost_LIBRARIES} ${CONAN_LIBS} OpenGL::GL)
+target_link_libraries(external ${SDL2_LIBRARIES} ${Boost_LIBRARIES} spdlog::spdlog OpenGL::GL)
 
 # Add the main executable.
 set(EXECUTABLE spc_player)

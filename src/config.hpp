@@ -17,6 +17,7 @@ const int RESET_TIMEOUT_MS = 100;
 
 // ImGui constants.
 const float COMPONENT_WIDTH = 0.10F;
+const float FILE_DIALOG_SIZE = 0.4F;
 
 // Serial buffer sizes.
 const size_t READ_BUFFER_SIZE = 500;

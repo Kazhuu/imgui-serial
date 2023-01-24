@@ -2,6 +2,7 @@
 #include "imgui.h"
 #include "logging.hpp"
 #include "string"
+#include "config.hpp"
 
 #define CUSTOM_IMGUIFILEDIALOG_CONFIG "file_dialog_config.hpp" // NOLINT
 #include "ImGuiFileDialog.h"
@@ -13,7 +14,10 @@ void FileDialog::render() {
     if (ImGui::Button("Open File Dialog")) {
         ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".spc", ".");
     }
-    if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey")) {
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImVec2 min_size(viewport->WorkSize.x * FILE_DIALOG_SIZE, viewport->WorkSize.y * FILE_DIALOG_SIZE);
+    ImVec2 max_size(viewport->WorkSize);
+    if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey", ImGuiWindowFlags_NoCollapse, min_size, max_size)) {
         if (ImGuiFileDialog::Instance()->IsOk()) {
             std::string filename = ImGuiFileDialog::Instance()->GetFilePathName();
             std::string file_path = ImGuiFileDialog::Instance()->GetCurrentPath();

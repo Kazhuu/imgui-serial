@@ -21,10 +21,6 @@ You system also need to have OpenGL drivers installed for your GPU. On Linux
 it. Usually these are already installed some way or other and no need to install
 anything.
 
-This project uses [Conan](https://conan.io/) package manager to manage it's
-dependencies where possible. So make sure to install it and the `conan` command
-is working for you.
-
 ## Build
 
 ### Windows MSYS2/MinGW
@@ -53,12 +49,10 @@ pacman -S mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja
 
 To build the application, run following commands in the project folder. Debug
 build is compiled by default, if you want a release build, please add
-`-DCMAKE_BUILD_TYPE=Release` to first CMake command. The flag `-b` tells Conan
-to compile the dependencies if no precompiled binaries are found.
+`-DCMAKE_BUILD_TYPE=Release` to first CMake command.
 
 ```shell
 mkdir build && cd build
-conan install -b ..
 cmake ..
 cmake --build .
 ```
@@ -74,12 +68,10 @@ sudo pacman -S sdl sdl2 boost
 
 To build the application, run following commands in the project folder. Debug
 build is compiled by default, if you want a release build, please add
-`-DCMAKE_BUILD_TYPE=Release` to first CMake command. The flag `-b` tells Conan
-to compile the dependencies if no precompiled binaries are found.
+`-DCMAKE_BUILD_TYPE=Release` to first CMake command.
 
 ```shell
 mkdir build && cd build
-conan install -b ..
 cmake ..
 cmake --build .
 ```
@@ -87,10 +79,10 @@ cmake --build .
 ## Running
 
 After everything compiles, executable `spc_player` will be placed under your
-`build/bin` directory. Run it from the build folder with:
+`build` directory. Run it from the build folder with:
 
 ```shell
-./bin/spc_player
+./spc_player
 ```
 
 ## Tests
