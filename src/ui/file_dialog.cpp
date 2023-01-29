@@ -26,11 +26,8 @@ void FileDialog::render() {
             log_debug("file_path: ", file_path);
 
             SpcFile spc_file(filename);
-            if (spc_file.is_spc_file()) {
-                log_info("opened file {}", spc_file.get_name());
-            } else {
-                log_info("invalid spc file");
-            }
+            log_info("opened file {} from game {}, length {} in seconds", spc_file.get_title(), spc_file.get_game(), spc_file.get_length());
+            log_info("song comments: {}", spc_file.get_comments());
         }
         ImGuiFileDialog::Instance()->Close();
     }
